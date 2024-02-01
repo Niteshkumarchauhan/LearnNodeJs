@@ -101,7 +101,9 @@ routes.post("/login", [
         }
     }),
     body("password").notEmpty().isLength({min: 6}).withMessage("Password cannot be less than 6 digits!")
+
 ],async(req,res)=>{
+    
     // Get the errors from validations
     const errorResults = validationResult(req)
 
