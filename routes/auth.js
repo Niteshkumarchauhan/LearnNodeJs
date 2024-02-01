@@ -1,5 +1,5 @@
-const express = require("express")
-const routes = express.Router()
+const express = require("express");
+const routes = express.Router();
 const { body, validationResult } = require('express-validator');
 const UserModel = require("../models/user")
 const bcrypt = require('bcryptjs');
@@ -166,33 +166,6 @@ routes.post("/login", [
 routes.post("/get-user", jwtVerify, async (req, res)=>{
     res.send(req.user)
 })
-// -----------------------------------------------------
-
-// -----------------------------------------------------
-// routes.post("/login-user", async (req, res) => {
-//     const { email, password } = req.body;
-
-//     try {
-//         if (!email || !password) {
-//             return res.status(400).json({ message: 'Email and password are required' });
-//         }
-//         const user = await UserModel.findOne({ email });
-
-//         if (!user) {
-//             return res.status(401).json({ message: 'Invalid email or password' });
-//         }
-//         const passwordMatch = (password === user.password);
-
-//         if (!passwordMatch) {
-//             return res.status(401).json({ message: 'Invalid email or password' });
-//         }
-//         return res.status(200).json({ message: 'Login successful', user });
-//     } catch (error) {
-//         console.error('Error during login:', error);
-//         return res.status(500).json({ message: 'Internal server error' });
-//     }
-// });
-
 // -----------------------------------------------------
 
 module.exports = routes
