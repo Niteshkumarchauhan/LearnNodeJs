@@ -4,6 +4,9 @@ const { body, validationResult } = require('express-validator');
 const UserModel = require("../models/user")
 const bcrypt = require('bcryptjs');
 const userModel = require("../models/user");
+const jwt = require('jsonwebtoken');
+const jwtVerify = require("../middleware/jwtVerify")
+require("dotenv").config()
 
 
 // Create User
@@ -49,10 +52,18 @@ routes.post("/create-user", [
             password: hashPassword
         })
 
+        const jwtTokenData = {
+            user_id: user._id
+        }
+
+        const jwtTokenKey = process.env.JWT_KEY
+
+        const JWT_TOKEN = jwt.sign(jwtTokenData,  jwtTokenKey);
+
         return res.status(200).json({
             success: true,
             message: "Account has been created successfully!",
-            data: user
+            accessToken: JWT_TOKEN
         })
 
     } catch (error) {
@@ -94,6 +105,7 @@ routes.get("/get-user", async (req, res)=>{
 
 // -----------------------------------------------------
 routes.post("/login", [
+
     body("email").isEmail().custom(async(data)=>{
         const user = await UserModel.findOne({email: data})
         if(!user){
@@ -103,7 +115,7 @@ routes.post("/login", [
     body("password").notEmpty().isLength({min: 6}).withMessage("Password cannot be less than 6 digits!")
 
 ],async(req,res)=>{
-    
+
     // Get the errors from validations
     const errorResults = validationResult(req)
 
@@ -128,10 +140,18 @@ routes.post("/login", [
             })
         }
 
+        const jwtTokenData = {
+            user_id: user._id
+        }
+
+        const jwtTokenKey = process.env.JWT_KEY
+
+        const JWT_TOKEN = jwt.sign(jwtTokenData,  jwtTokenKey);
+
         return res.status(200).json({
             status: true,
             message:"User has been logged in successfully!",
-            user
+            accessToken: JWT_TOKEN
         })
 
     } catch (error) {
@@ -141,6 +161,10 @@ routes.post("/login", [
         })
     }
 
+})
+
+routes.post("/get-user", jwtVerify, async (req, res)=>{
+    res.send(req.user)
 })
 // -----------------------------------------------------
 
